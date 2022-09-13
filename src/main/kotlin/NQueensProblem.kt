@@ -10,7 +10,8 @@ data class NQueensProblem(
 ) {
     var numberOfAcceptedSolutions = 0
         private set
-    private var bestSolution = emptyList<Int>()
+    var bestSolution = emptyList<Int>()
+        private set
 
     fun compute() {
         var temperature = initialTemperature
@@ -18,13 +19,13 @@ data class NQueensProblem(
         var shouldSetNewArray = false
 
         while (temperature > finalTemperature) {
-            for (step in 0..stepsPerChange) {
+            for (step in 1..stepsPerChange) {
                 val working = currentSolution.shuffled()
 
                 if (working.energy <= currentSolution.energy) {
                     shouldSetNewArray = true
                 } else {
-                    if (Random.nextDouble(0.0, 1.0) < exp(-(working.energy - currentSolution.energy)/temperature)) {
+                    if (Random.nextDouble(0.0, 1.0) < exp(-(working.energy - currentSolution.energy) / temperature)) {
                         shouldSetNewArray = true
                         numberOfAcceptedSolutions++
                     }
@@ -41,7 +42,6 @@ data class NQueensProblem(
             }
             temperature *= alpha
         }
-        print(bestSolution)
     }
 
     private val List<Int>.energy: Int

@@ -1,23 +1,22 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.compose.compose
 
 plugins {
-    kotlin("jvm") version "1.5.21"
-    application
+    kotlin("jvm") version "1.6.10"
+    id("org.jetbrains.compose") version "1.1.0"
 }
-
-group = "me.tewat"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    google()
+}
+group = "me.tewat"
+dependencies {
+    implementation(compose.desktop.currentOs)
 }
 
-
-
-tasks.withType<KotlinCompile>() {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-application {
-    mainClassName = "MainKt"
+compose.desktop {
+    application {
+        mainClass = "MainKt"
+    }
 }
