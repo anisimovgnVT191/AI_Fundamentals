@@ -1,5 +1,7 @@
+import ui.models.NQueensParameters
 import kotlin.math.exp
 import kotlin.random.Random
+import kotlin.system.measureTimeMillis
 
 data class NQueensProblem(
     val N: Int,
@@ -12,6 +14,25 @@ data class NQueensProblem(
         private set
     var bestSolution = emptyList<Int>()
         private set
+    var bestSolutionEnergy: Int = 100
+        get() { return  bestSolution.energy }
+
+    var timeElapsed: Long = 0
+        private  set
+
+    constructor(parameters: NQueensParameters) : this(
+        N = parameters.N,
+        initialTemperature = parameters.initialTemperature,
+        finalTemperature = parameters.finalTemperature,
+        alpha = parameters.alpha,
+        stepsPerChange = parameters.stepsPerChange
+    )
+
+    fun computeWithTimeMeasurement() {
+        timeElapsed = measureTimeMillis {
+            compute()
+        }
+    }
 
     fun compute() {
         var temperature = initialTemperature
@@ -73,4 +94,23 @@ data class NQueensProblem(
 
             return  conflicts
         }
+
+    private fun List<Int>.tweakSolution(): List<Int> {
+        var result = this.toMutableList()
+
+        for (i in indices) {
+            var x: Int = Random.nextInt(until = size)
+            var y: Int
+
+            do {
+                y = Random.nextInt(until = size)
+            } while (x == y)
+
+            var tmp = result[x]
+            result[x] = y
+            result[y] = tmp
+        }
+
+        return result
+    }
 }
