@@ -12,14 +12,23 @@ data class NQueensProblem(
 ) {
     var numberOfAcceptedSolutions = 0
         private set
-    var bestSolution = emptyList<Int>()
-        private set
     var bestSolutionEnergy: Int = 100
         get() { return  bestSolution.energy }
 
     var timeElapsed: Long = 0
         private  set
 
+    var bestSolution: List<Int>
+        private set
+    private var currentSolution: List<Int>
+    private var workingSolution: List<Int>
+
+    init {
+        bestSolution = List(N) { return@List it }.tweakSolution()
+        currentSolution = List(N) { return@List it }.shuffled()
+        workingSolution = List(N) { return@List it }.tweakSolution()
+
+    }
     constructor(parameters: NQueensParameters) : this(
         N = parameters.N,
         initialTemperature = parameters.initialTemperature,
@@ -36,17 +45,17 @@ data class NQueensProblem(
 
     fun compute() {
         var temperature = initialTemperature
-        var currentSolution = List(N) { return@List it }
         var shouldSetNewArray = false
 
+        workingSolution = currentSolution
         while (temperature > finalTemperature) {
             for (step in 1..stepsPerChange) {
-                val working = currentSolution.shuffled()
+                workingSolution = workingSolution.tweakSolution()
 
-                if (working.energy <= currentSolution.energy) {
+                if (workingSolution.energy <= currentSolution.energy) {
                     shouldSetNewArray = true
                 } else {
-                    if (Random.nextDouble(0.0, 1.0) < exp(-(working.energy - currentSolution.energy) / temperature)) {
+                    if (Random.nextDouble(0.0, 1.0) < exp(-(workingSolution.energy - currentSolution.energy) / temperature)) {
                         shouldSetNewArray = true
                         numberOfAcceptedSolutions++
                     }
@@ -54,11 +63,13 @@ data class NQueensProblem(
 
                 if (shouldSetNewArray) {
                     shouldSetNewArray = false
-                    currentSolution = working
+                    currentSolution = workingSolution
 
                     if (currentSolution.energy < bestSolution.energy) {
                         bestSolution = currentSolution
                     }
+                } else {
+                    workingSolution = currentSolution
                 }
             }
             temperature *= alpha
@@ -98,17 +109,25 @@ data class NQueensProblem(
     private fun List<Int>.tweakSolution(): List<Int> {
         var result = this.toMutableList()
 
+        val x = Random.nextInt(until = size)
+        var y: Int
+
+        do{
+            y = Random.nextInt(until = size)
+        } while (x == y)
+
+        val tmp = result[x]
+        result[x] = result[y]
+        result[y] = tmp
+
+        return result
+    }
+
+    private fun List<Int>.shuffled(): List<Int> {
+        var result = this.toMutableList()
+
         for (i in indices) {
-            var x: Int = Random.nextInt(until = size)
-            var y: Int
-
-            do {
-                y = Random.nextInt(until = size)
-            } while (x == y)
-
-            var tmp = result[x]
-            result[x] = y
-            result[y] = tmp
+            result = result.tweakSolution().toMutableList()
         }
 
         return result
