@@ -132,4 +132,8 @@ data class NQueensProblem(
 
         return result
     }
+
+    override fun equals(other: Any?): Boolean {
+        return false
+    }
 }

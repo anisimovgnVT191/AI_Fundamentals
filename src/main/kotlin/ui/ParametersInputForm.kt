@@ -2,6 +2,7 @@ package ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -11,12 +12,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import ui.models.NQueensParameters
 
 @Preview
 @Composable
 fun ParametersInputForm(modifier: Modifier = Modifier, onButtonTapped: (NQueensParameters) -> Unit = {}) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.padding(horizontal = 10.dp)) {
         var n by remember { mutableStateOf("") }
         Input(labelText = R.NQueensParameterNames.N, value = n) { n = it}
 
